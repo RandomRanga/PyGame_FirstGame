@@ -18,6 +18,8 @@ BORDER = pygame.Rect(WIDTH/2 - BORDER_WIDTH, 0, BORDER_WIDTH, HEIGHT)
 
 FPS = 60
 VELOCITY = 5
+BULLET_VELOCITY = 7
+
 SPACESHIP_WIDTH, SPACESHIP_HEIGHT = 55, 40
 
 #imports the images and then resizes and rotates. 
@@ -77,6 +79,8 @@ def main():
     yellow = pygame.Rect(100, 300, SPACESHIP_WIDTH, SPACESHIP_HEIGHT)
     red = pygame.Rect(700, 300, SPACESHIP_WIDTH, SPACESHIP_HEIGHT)
     
+    yellow_bullets = []
+    red_bullets = []
 
     clock = pygame.time.Clock()
     #To make game run until false 
@@ -89,7 +93,23 @@ def main():
             #Checks for the quit event
             if event.type == pygame.QUIT:
                 run = False
-        
+
+            #Checks if a key has been pressed 
+            if event.type == pygame.KEYDOWN:
+                #Checks if the key pressed was left control then 
+                if event.key == pygame.K_LCTRL:
+                    #Creates the bullet and adds to the list 
+                    bullet = pygame.Rect(yellow.x + yellow.width, yellow.y + yellow.height/2 - 3, 10, 6)
+                    yellow_bullets.append(bullet)
+
+
+                if event.key == pygame.K_RCTRL:
+                    #Creates the bullet and adds to the list 
+                    bullet = pygame.Rect(red.x, red.y + yellow.height/2 - 3, 10, 6)
+                    red_bullets.append(bullet)
+
+        print(red_bullets, yellow_bullets)
+
         #Tells us which keys are being pressed/ held down
         keys_pressed = pygame.key.get_pressed()
         #Calls fuctions for moving both ships
