@@ -9,11 +9,14 @@ WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 #renames the window
 pygame.display.set_caption("First Game")
 
-#Color white
+#Colors
 WHITE = (255,255,255)
 BLACK = (0,0,0)
 YELLOW = (255, 255, 0)
 RED = (255, 0, 0)
+
+#Imports background image and resizes it to the window
+SPACE = pygame.transform.scale(pygame.image.load(os.path.join('Assets', 'space.png')), (WIDTH, HEIGHT))
 
 BORDER_WIDTH = 10
 BORDER = pygame.Rect(WIDTH/2 - BORDER_WIDTH, 0, BORDER_WIDTH, HEIGHT)
@@ -23,6 +26,7 @@ VELOCITY = 5
 BULLET_VELOCITY = 7
 
 SPACESHIP_WIDTH, SPACESHIP_HEIGHT = 55, 40
+BULLET_WIDTH, BULLET_HEIGHT = 10, 6
 
 #imports the images and then resizes and rotates. 
 YELLOW_SPACESHIP_IMAGE = pygame.image.load(os.path.join('Assets', 'spaceship_yellow.png'))
@@ -34,7 +38,7 @@ RED_SPACESHIP = pygame.transform.rotate(pygame.transform.scale(RED_SPACESHIP_IMA
 
 def draw_window(yellow, red, yellow_bullets, red_bullets):
     #Gives the window a background
-    WIN.fill(WHITE)
+    WIN.blit(SPACE, (0, 0))
     
     #draws the images onto the window at the pos of the yellow and red rects
     WIN.blit(YELLOW_SPACESHIP,(yellow.x, yellow.y))
@@ -85,15 +89,29 @@ def red_handle_movement(keys_pressed, red):
 
 
 def handle_bullets(yellow_bullets, red_bullets, yellow, red):
-    #loops through each bullet in the yellow bullet list
+    #Loops through each bullet in the yellow bullet list
     for bullet in yellow_bullets: 
-        #moves bullet right
+        #Moves bullet right
         bullet.x += BULLET_VELOCITY
+        #Checks if red ship has been hit then posts an event and removes the bullet
+        if red.colliderect(bullet):
+            yellow_bullets.remove(bullet)
+        #Checks if bullet has hit the right wall then removes bullet
+        elif bullet.x > WIDTH:
+            yellow_bullets.remove(bullet)
 
-    #loops through each bullet in the red bullet list
+    #Loops through each bullet in the red bullet list
     for bullet in red_bullets:
         #moves bullet left
         bullet.x -= BULLET_VELOCITY
+        #Checks if yellow ship has been hit then posts an event and removes the bullet
+        if yellow.colliderect(bullet):
+            red_bullets.remove(bullet)
+        #Checks if bullet has hit the left wall then removes bullet
+        elif bullet.x + BULLET_WIDTH < 0:
+            red_bullets.remove(bullet)
+
+
       
 
 
@@ -128,15 +146,15 @@ def main():
             #Checks if a key has been pressed 
             if event.type == pygame.KEYDOWN:
                 #Checks if the key pressed was left control then 
-                if event.key == pygame.K_LCTRL:
+                if event.key == pygame.K_LCTRL and len(yellow_bullets) < 5:
                     #Creates the bullet and adds to the list 
-                    bullet = pygame.Rect(yellow.x + yellow.width, yellow.y + yellow.height/2 - 3, 10, 6)
+                    bullet = pygame.Rect(yellow.x + yellow.width, yellow.y + yellow.height/2 - 3, BULLET_WIDTH, BULLET_HEIGHT)
                     yellow_bullets.append(bullet)
 
 
-                if event.key == pygame.K_RCTRL:
+                if event.key == pygame.K_RCTRL and len(red_bullets) < 5:
                     #Creates the bullet and adds to the list 
-                    bullet = pygame.Rect(red.x, red.y + yellow.height/2 - 3, 10, 6)
+                    bullet = pygame.Rect(red.x, red.y + yellow.height/2 - 3, BULLET_WIDTH, BULLET_HEIGHT)
                     red_bullets.append(bullet)
 
 
