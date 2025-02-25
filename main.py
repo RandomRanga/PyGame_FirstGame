@@ -12,6 +12,8 @@ pygame.display.set_caption("First Game")
 #Color white
 WHITE = (255,255,255)
 BLACK = (0,0,0)
+YELLOW = (255, 255, 0)
+RED = (255, 0, 0)
 
 BORDER_WIDTH = 10
 BORDER = pygame.Rect(WIDTH/2 - BORDER_WIDTH, 0, BORDER_WIDTH, HEIGHT)
@@ -30,7 +32,7 @@ RED_SPACESHIP_IMAGE = pygame.image.load(os.path.join('Assets', 'spaceship_red.pn
 RED_SPACESHIP = pygame.transform.rotate(pygame.transform.scale(RED_SPACESHIP_IMAGE, (SPACESHIP_WIDTH,SPACESHIP_HEIGHT)), 270)
 
 
-def draw_window(yellow, red):
+def draw_window(yellow, red, red_bullets, yellow_bullets):
     #Gives the window a background
     WIN.fill(WHITE)
     
@@ -40,6 +42,14 @@ def draw_window(yellow, red):
 
     #draws border use .draw as it is a simple shape not an image 
     pygame.draw.rect(WIN, BLACK, BORDER)
+
+    
+    for bullet in yellow_bullets: 
+        pygame.draw.rect(WIN, YELLOW, bullet)
+
+    for bullet in red_bullets: 
+        pygame.draw.rect(WIN, RED, bullet)
+
 
     #Updates the display
     pygame.display.update()
@@ -70,6 +80,23 @@ def red_handle_movement(keys_pressed, red):
     #moves yellow ship down if down arrow is pressed. Ensures can't move out of window.
     if keys_pressed[pygame.K_DOWN]and red.y + VELOCITY + red.height < HEIGHT - 15: #down key 
         red.y += VELOCITY 
+    
+
+
+
+def handle_bullets(yellow_bullets, red_bullets, yellow, red):
+    for bullet in yellow_bullets: 
+        bullet.x += BULLET_VELOCITY
+
+    for bullet in red_bullets:
+        bullet.x -= BULLET_VELOCITY
+      
+
+
+
+
+
+
 
 
 #Main function
@@ -108,7 +135,6 @@ def main():
                     bullet = pygame.Rect(red.x, red.y + yellow.height/2 - 3, 10, 6)
                     red_bullets.append(bullet)
 
-        print(red_bullets, yellow_bullets)
 
         #Tells us which keys are being pressed/ held down
         keys_pressed = pygame.key.get_pressed()
@@ -116,9 +142,10 @@ def main():
         yellow_handle_movement(keys_pressed, yellow)
         red_handle_movement(keys_pressed, red)
 
+        handle_bullets(yellow_bullets, red_bullets, yellow, red)
 
         #runs draw window fuction with red and yellow passed in. 
-        draw_window(yellow, red)
+        draw_window(yellow, red, yellow_bullets, red_bullets)
         
         
     pygame.quit()
