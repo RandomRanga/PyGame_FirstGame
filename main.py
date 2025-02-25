@@ -1,6 +1,6 @@
 import pygame
 import os
-
+pygame.font.init()
 
 
 #pygame window 
@@ -14,6 +14,10 @@ WHITE = (255,255,255)
 BLACK = (0,0,0)
 YELLOW = (255, 255, 0)
 RED = (255, 0, 0)
+
+#Defines the fonts
+HEALTH_FONT = pygame.font.SysFont('comicsans', 35)
+WINNER_FONT = pygame.font.SysFont('comicsans', 150)
 
 #Imports background image and resizes it to the window
 SPACE = pygame.transform.scale(pygame.image.load(os.path.join('Assets', 'space.png')), (WIDTH, HEIGHT))
@@ -41,9 +45,18 @@ RED_SPACESHIP_IMAGE = pygame.image.load(os.path.join('Assets', 'spaceship_red.pn
 RED_SPACESHIP = pygame.transform.rotate(pygame.transform.scale(RED_SPACESHIP_IMAGE, (SPACESHIP_WIDTH,SPACESHIP_HEIGHT)), 270)
 
 
-def draw_window(yellow, red, yellow_bullets, red_bullets):
+def draw_window(yellow, red, yellow_bullets, red_bullets, yellow_health, red_health):
     #Gives the window a background
     WIN.blit(SPACE, (0, 0))
+
+    #Creates the 2 text objects showing the health 
+    yellow_heatlh_text = HEALTH_FONT.render("Health: " + str(yellow_health), 1, WHITE)
+    red_heatlh_text = HEALTH_FONT.render("Health: " + str(red_health), 1, WHITE)
+    #Draws boths text objects at the correct locations
+    WIN.blit(yellow_heatlh_text, (20, 20))
+    WIN.blit(red_heatlh_text, (WIDTH - red_heatlh_text.get_width() - 20, 20))
+   
+    
     
     #draws the images onto the window at the pos of the yellow and red rects
     WIN.blit(YELLOW_SPACESHIP,(yellow.x, yellow.y))
@@ -120,7 +133,15 @@ def handle_bullets(yellow_bullets, red_bullets, yellow, red):
 
 
       
-
+def draw_winner(text):
+    #Render the winner text and save in a variable
+    draw_text = WINNER_FONT.render(text, 1, WHITE)
+    #Draw the text in the center of the window 
+    WIN.blit(draw_text, (WIDTH/2 - draw_text.get_width()/2, HEIGHT/2 - draw_text.get_height()/2 ))
+    #Updates the window to show winner text
+    pygame.display.update()
+    #pauses the game for 5 seconds
+    pygame.time.delay(5000)
 
 
 
@@ -153,6 +174,7 @@ def main():
             #Checks for the quit event
             if event.type == pygame.QUIT:
                 run = False
+                pygame.quit()
 
             #Checks if a key has been pressed 
             if event.type == pygame.KEYDOWN:
@@ -176,9 +198,6 @@ def main():
             if event.type == RED_HIT: 
                 red_health -= 1
 
-
-
-
         #Custom text dependent on who has 0 or less health first
         winner_text = ""
         if yellow_health <= 0: 
@@ -186,9 +205,7 @@ def main():
         if red_health <= 0:
             winner_text = "Yellow Wins!" 
 
-        if winner_text != "":
-            print(winner_text) #someone has won
-
+       
 
 
         #Tells us which keys are being pressed/ held down
@@ -200,10 +217,16 @@ def main():
         handle_bullets(yellow_bullets, red_bullets, yellow, red)
 
         #runs draw window fuction with red and yellow passed in. 
-        draw_window(yellow, red, yellow_bullets, red_bullets)
+        draw_window(yellow, red, yellow_bullets, red_bullets, yellow_health, red_health)
+
+        #Someone has won, draws the text of whoever won. 
+        if winner_text != "":
+            draw_winner(winner_text)
+            break
         
         
-    pygame.quit()
+    #runs main() 
+    main()
 
 # Run main() only if this script is executed directly
 if __name__ == "__main__":
