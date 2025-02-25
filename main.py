@@ -28,6 +28,11 @@ BULLET_VELOCITY = 7
 SPACESHIP_WIDTH, SPACESHIP_HEIGHT = 55, 40
 BULLET_WIDTH, BULLET_HEIGHT = 10, 6
 
+#Creates new events 
+YELLOW_HIT = pygame.USEREVENT + 1 
+RED_HIT = pygame.USEREVENT + 2
+
+
 #imports the images and then resizes and rotates. 
 YELLOW_SPACESHIP_IMAGE = pygame.image.load(os.path.join('Assets', 'spaceship_yellow.png'))
 YELLOW_SPACESHIP = pygame.transform.rotate(pygame.transform.scale(YELLOW_SPACESHIP_IMAGE, (SPACESHIP_WIDTH,SPACESHIP_HEIGHT)), 90)
@@ -95,6 +100,7 @@ def handle_bullets(yellow_bullets, red_bullets, yellow, red):
         bullet.x += BULLET_VELOCITY
         #Checks if red ship has been hit then posts an event and removes the bullet
         if red.colliderect(bullet):
+            pygame.event.post(pygame.event.Event(RED_HIT))
             yellow_bullets.remove(bullet)
         #Checks if bullet has hit the right wall then removes bullet
         elif bullet.x > WIDTH:
@@ -106,6 +112,7 @@ def handle_bullets(yellow_bullets, red_bullets, yellow, red):
         bullet.x -= BULLET_VELOCITY
         #Checks if yellow ship has been hit then posts an event and removes the bullet
         if yellow.colliderect(bullet):
+            pygame.event.post(pygame.event.Event(YELLOW_HIT))
             red_bullets.remove(bullet)
         #Checks if bullet has hit the left wall then removes bullet
         elif bullet.x + BULLET_WIDTH < 0:
@@ -130,6 +137,10 @@ def main():
     
     yellow_bullets = []
     red_bullets = []
+
+    yellow_health = 10 
+    red_health = 10 
+
 
     clock = pygame.time.Clock()
     #To make game run until false 
@@ -156,6 +167,28 @@ def main():
                     #Creates the bullet and adds to the list 
                     bullet = pygame.Rect(red.x, red.y + yellow.height/2 - 3, BULLET_WIDTH, BULLET_HEIGHT)
                     red_bullets.append(bullet)
+
+            #Checks if yellow has been hit then minus one from health
+            if event.type == YELLOW_HIT: 
+                yellow_health -= 1
+
+            #Checks if red has been hit then minus one from health
+            if event.type == RED_HIT: 
+                red_health -= 1
+
+
+
+
+        #Custom text dependent on who has 0 or less health first
+        winner_text = ""
+        if yellow_health <= 0: 
+            winner_text = "Red Wins!"
+        if red_health <= 0:
+            winner_text = "Yellow Wins!" 
+
+        if winner_text != "":
+            print(winner_text) #someone has won
+
 
 
         #Tells us which keys are being pressed/ held down
