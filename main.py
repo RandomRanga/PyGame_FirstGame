@@ -32,7 +32,7 @@ RED_SPACESHIP_IMAGE = pygame.image.load(os.path.join('Assets', 'spaceship_red.pn
 RED_SPACESHIP = pygame.transform.rotate(pygame.transform.scale(RED_SPACESHIP_IMAGE, (SPACESHIP_WIDTH,SPACESHIP_HEIGHT)), 270)
 
 
-def draw_window(yellow, red, red_bullets, yellow_bullets):
+def draw_window(yellow, red, yellow_bullets, red_bullets):
     #Gives the window a background
     WIN.fill(WHITE)
     
@@ -85,10 +85,14 @@ def red_handle_movement(keys_pressed, red):
 
 
 def handle_bullets(yellow_bullets, red_bullets, yellow, red):
+    #loops through each bullet in the yellow bullet list
     for bullet in yellow_bullets: 
+        #moves bullet right
         bullet.x += BULLET_VELOCITY
 
+    #loops through each bullet in the red bullet list
     for bullet in red_bullets:
+        #moves bullet left
         bullet.x -= BULLET_VELOCITY
       
 
